@@ -14,11 +14,8 @@ urlpatterns = [
     
     path('analisis/confirmar-eliminacion/<uuid:analisis_id>/', views.confirmar_eliminacion, name='confirmar_eliminacion'),
     
-    # Eliminar análisis
     path('analisis/eliminar/<uuid:analisis_id>/', views.eliminar_analisis, name='eliminar_analisis'),
     
-
-    # APIs para el análisis financiero
     path('api/maquinas/tipo/<str:tipo>/', views.api_maquinas_por_tipo, name='api_maquinas_tipo'),
     path('api/maquina/<uuid:id>/', views.api_maquina_detalle, name='api_maquina_detalle'),
     path('api/guardar-analisis/', views.guardar_analisis, name='api_guardar_analisis'),
