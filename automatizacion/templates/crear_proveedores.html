@@ -14,6 +14,7 @@
         --primary-hover: #1d4ed8;
         --secondary-color: #64748b;
         --success-color: #10b981;
+        --danger-color: #ef4444;
         --background-color: #f8fafc;
         --card-background: #ffffff;
         --border-color: #e2e8f0;
@@ -144,6 +145,7 @@
         color: var(--text-primary);
         font-size: 0.95rem;
         transition: all 0.2s ease;
+        box-sizing: border-box;
     }
 
     .form-group input:focus,
@@ -158,25 +160,6 @@
     .form-group textarea {
         min-height: 100px;
         resize: vertical;
-    }
-
-    .checkbox-group {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        margin-top: 1rem;
-    }
-
-    .checkbox-group input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-        accent-color: var(--primary-color);
-    }
-
-    .checkbox-group label {
-        margin: 0;
-        font-weight: 500;
-        color: var(--text-primary);
     }
 
     .button-group {
@@ -244,6 +227,16 @@
         font-size: 0.95rem;
     }
 
+    .required {
+        color: var(--danger-color);
+    }
+
+    .help-text {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-top: 0.25rem;
+    }
+
     @media (max-width: 768px) {
         .container { padding: 1rem; }
         .page-header { flex-direction: column; gap: 1rem; text-align: center; }
@@ -295,23 +288,14 @@
                     </h3>
                     
                     <div class="form-group">
-                        <label for="id_id">ID Proveedor *</label>
+                        <label for="id_id">ID Proveedor <span class="required">*</span></label>
                         <input type="text" id="id_id" name="id" maxlength="50" required>
+                        <div class="help-text">Identificador único del proveedor</div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="id_nombre">Nombre *</label>
+                        <label for="id_nombre">Nombre <span class="required">*</span></label>
                         <input type="text" id="id_nombre" name="nombre" maxlength="200" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_contacto">Persona de Contacto *</label>
-                        <input type="text" id="id_contacto" name="contacto" maxlength="100" required>
-                    </div>
-
-                    <div class="checkbox-group">
-                        <input type="checkbox" id="id_activo" name="activo" checked>
-                        <label for="id_activo">Proveedor Activo</label>
                     </div>
                 </div>
 
@@ -320,6 +304,11 @@
                         <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                         Información de Contacto
                     </h3>
+                    
+                    <div class="form-group">
+                        <label for="id_contacto">Persona de Contacto <span class="required">*</span></label>
+                        <input type="text" id="id_contacto" name="contacto" maxlength="100" required>
+                    </div>
                     
                     <div class="form-group">
                         <label for="id_email">Email</label>
@@ -335,17 +324,13 @@
                 <div class="form-section">
                     <h3 class="section-title">
                         <svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                        Condiciones Comerciales
+                        Términos Comerciales
                     </h3>
                     
                     <div class="form-group">
-                        <label for="id_terminos_pago">Términos de Pago (días) *</label>
+                        <label for="id_terminos_pago">Términos de Pago (días) <span class="required">*</span></label>
                         <input type="number" id="id_terminos_pago" name="terminos_pago" min="1" required>
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="id_tipo_materia_prima">Tipo de Materia Prima</label>
-                        <input type="text" id="id_tipo_materia_prima" name="tipo_materia_prima" maxlength="100">
+                        <div class="help-text">Número de días acordados para realizar el pago al proveedor</div>
                     </div>
                 </div>
 
@@ -377,20 +362,48 @@
 </div>
 
 <script>
-    // El script de validación es genérico y no necesita cambios.
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form');
-        const inputs = form.querySelectorAll('input[required], select[required]');
-        
-        inputs.forEach(input => {
-            input.addEventListener('input', function() {
-                if (this.checkValidity()) {
-                    this.style.borderColor = 'var(--success-color)';
-                } else {
-                    this.style.borderColor = '#ef4444';
-                }
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('form');
+    const submitBtn = form.querySelector('button[type="submit"]');
+    const inputs = form.querySelectorAll('input[required], select[required]');
+    
+    // Validación en tiempo real
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (this.checkValidity()) {
+                this.style.borderColor = 'var(--success-color)';
+            } else {
+                this.style.borderColor = 'var(--danger-color)';
+            }
         });
     });
+
+    // Validación al enviar el formulario
+    form.addEventListener('submit', function(e) {
+        const requiredFields = form.querySelectorAll('input[required], select[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.style.borderColor = 'var(--danger-color)';
+            } else {
+                field.style.borderColor = 'var(--border-color)';
+            }
+        });
+        
+        if (!isValid) {
+            e.preventDefault();
+            alert('Por favor, complete todos los campos requeridos.');
+            return;
+        }
+        
+        // Deshabilitar botón durante el envío
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = `<svg class="section-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+        </svg>Guardando...`;
+    });
+});
 </script>
 {% endblock %}

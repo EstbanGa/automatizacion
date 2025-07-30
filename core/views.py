@@ -676,7 +676,7 @@ def clientes_crear(request):
             Cliente.objects.create(
                 id=request.POST.get('id'),
                 nombre=request.POST.get('nombre'),
-                contacto=request.POST.get('contacto'),
+                city=request.POST.get('city'),  # Cambio: contacto -> city
                 email=request.POST.get('email') or None,
                 telefono=request.POST.get('telefono') or None,
                 terminos_contractuales=int(request.POST.get('terminos_contractuales')),
@@ -757,7 +757,7 @@ def proveedores_crear(request):
                 email=request.POST.get('email') or None,
                 telefono=request.POST.get('telefono') or None,
                 terminos_pago=int(request.POST.get('terminos_pago')),
-                tipo_materia_prima=request.POST.get('tipo_materia_prima') or None,
+                # Removido: tipo_materia_prima (no existe en el modelo)
                 observaciones=request.POST.get('observaciones', '')
             )
             messages.success(request, 'Proveedor creado exitosamente')
