@@ -20,7 +20,7 @@ class MaquinaForm(forms.ModelForm):
             'tipo': 'Tipo de máquina (Challenger/Defender)',
             'numero_serie': 'Número de serie',
             'equipment_number': 'Número de equipo',
-            'criticality_ranking': 'Ranking de criticidad (1-5)',
+            'criticality_ranking': 'Ranking de criticidad (0-5)',
             'availability': 'Disponibilidad (%)',
             'date_in_service': 'Fecha de puesta en servicio',
             'machine_age': 'Edad de la máquina (años)',
@@ -98,7 +98,7 @@ class MaquinaForm(forms.ModelForm):
             
             if field_name == 'criticality_ranking':
                 field.widget.attrs.update({
-                    'min': '1',
+                    'min': '0',
                     'max': '5',
                     'step': '0.1'
                 })
