@@ -396,6 +396,42 @@
         .btn, .card-header { display: none !important; }
         .analysis-card { border: 1px solid #000 !important; }
     }
+
+    .age-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: rgba(0, 0, 0, 0.05);
+        border-radius: var(--radius-sm);
+        font-size: 0.85rem;
+    }
+
+    .age-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 15px;
+        font-weight: 500;
+        font-size: 0.75rem;
+    }
+
+    .age-badge.new {
+        background: var(--success-color);
+        color: white;
+    }
+
+    .age-badge.moderate {
+        background: var(--warning-color);
+        color: white;
+    }
+
+    .age-badge.old {
+        background: #ef4444;
+        color: white;
+    }
+
+
+
 </style>
 
 <div class="container">
@@ -497,6 +533,14 @@
                         <div class="table-container">
                             <table class="table">
                                 <tr>
+                                    <td><strong>Fecha de Adquisición:</strong></td>
+                                    <td id="fecha-adquisicion-defender">-</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Edad Actual:</strong></td>
+                                    <td id="edad-detallada-defender">-</td>
+                                </tr>
+                                <tr>
                                     <td><strong>Costo de Oportunidad:</strong></td>
                                     <td id="oportunidad-defender">$0</td>
                                 </tr>
@@ -505,7 +549,7 @@
                                     <td id="op-costs-defender">$0</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>Vida Útil Restante:</strong></td>
+                                    <td><strong>Vida Útil Total:</strong></td>
                                     <td id="vida-defender">0 años</td>
                                 </tr>
                                 <tr>
@@ -524,6 +568,10 @@
                     <div class="card-body">
                         <div class="table-container">
                             <table class="table">
+                                <tr>
+                                    <td><strong>Estado:</strong></td>
+                                    <td><span class="age-badge new">EQUIPO NUEVO</span></td>
+                                </tr>
                                 <tr>
                                     <td><strong>Inversión Inicial:</strong></td>
                                     <td id="inversion-challenger">$0</td>
@@ -670,9 +718,86 @@
                 console.error('Error cargando máquina preseleccionada:', error);
             });
     }
+
+    function calcularEdadMaquina(fechaAdquisicion) {
+        if (!fechaAdquisicion) return null;
+        
+        const fechaActual = new Date();
+        const fechaCompra = new Date(fechaAdquisicion);
+        
+        // Calcular diferencia en años y meses
+        let años = fechaActual.getFullYear() - fechaCompra.getFullYear();
+        let meses = fechaActual.getMonth() - fechaCompra.getMonth();
+        
+        if (meses < 0) {
+            años--;
+            meses += 12;
+        }
+        
+        return { años, meses };
+    }
+
+
+    function formatearEdad(edad) {
+        if (!edad) return 'No disponible';
+        
+        let texto = '';
+        if (edad.años > 0) {
+            texto += `${edad.años} año${edad.años > 1 ? 's' : ''}`;
+        }
+        if (edad.meses > 0) {
+            if (texto) texto += ' y ';
+            texto += `${edad.meses} mes${edad.meses > 1 ? 'es' : ''}`;
+        }
+        
+        return texto || 'Menos de 1 mes';
+    }
+
+
+    function obtenerClaseEdad(edad) {
+        if (!edad) return 'moderate';
+        
+        const totalMeses = edad.años * 12 + edad.meses;
+        
+        if (totalMeses < 24) return 'new';        // Menos de 2 años
+        if (totalMeses < 60) return 'moderate';   // Entre 2-5 años
+        return 'old';                             // Más de 5 años
+    }
+
+    // ✅ NUEVA FUNCIÓN: Actualizar información de edad en la UI
+    function actualizarInfoEdad(maquinaData, tipo) {
+        if (tipo === 'defender' && maquinaData) {
+            const edad = calcularEdadMaquina(maquinaData.date_in_service);
+            const edadTexto = formatearEdad(edad);
+            const claseEdad = obtenerClaseEdad(edad);
+            
+            // Actualizar badge en el resumen
+            const edadBadge = document.getElementById('edad-defender');
+            if (edadBadge) {
+                edadBadge.textContent = edadTexto;
+                edadBadge.className = `age-badge ${claseEdad}`;
+            }
+            
+            // Actualizar información detallada
+            const fechaAdquisicion = document.getElementById('fecha-adquisicion-defender');
+            const edadDetallada = document.getElementById('edad-detallada-defender');
+            
+            if (fechaAdquisicion && maquinaData.date_in_service) {
+                const fecha = new Date(maquinaData.date_in_service);
+                fechaAdquisicion.textContent = fecha.toLocaleDateString('es-ES');
+            }
+            
+            if (edadDetallada) {
+                edadDetallada.innerHTML = `<span class="age-badge ${claseEdad}">${edadTexto}</span>`;
+            }
+        }
+    }
+
     function getValidValue(value, defaultValue = 0) {
         return (value !== null && value !== undefined && !isNaN(value)) ? value : defaultValue;
     }
+
+
     function cargarMaquinas() {
         // Cargar Defenders
         fetch('/api/maquinas/tipo/Defender/')
@@ -709,6 +834,8 @@
             .then(response => response.json())
             .then(data => {
                 defenderData = data;
+                // ✅ ACTUALIZAR: Calcular y mostrar edad
+                actualizarInfoEdad(data, 'defender');
                 verificarYCalcular();
             });
     }
