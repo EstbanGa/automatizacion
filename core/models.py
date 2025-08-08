@@ -34,7 +34,7 @@ class Maquina(models.Model):
     # Campos adicionales necesarios:
     acquisition_cost = models.DecimalField("Costo de Adquisición (para Defender)", max_digits=20, decimal_places=2, blank=True, null=True)
     book_value = models.DecimalField("Valor en Libros", max_digits=20, decimal_places=2, blank=True, null=True)
-    machine_age = models.IntegerField("Edad de la Máquina (años)", blank=True, null=True)
+
     equipment_number = models.CharField("Número de Equipo", max_length=50, blank=True, null=True)
     # CATEGORÍA 3: COSTOS OPERATIVOS Y MANTENIMIENTO
     annual_maintenance_labor_parts = models.DecimalField("Mantenimiento Anual (Mano de Obra y Piezas)", max_digits=20, decimal_places=2, blank=True, null=True)

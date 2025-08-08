@@ -223,7 +223,7 @@ def api_maquina_detalle(request, id):
             'monthly_operating_hours': safe_decimal_to_float(maquina.monthly_operating_hours),
             'production_rate': safe_decimal_to_float(maquina.production_rate),
             'production_rate_units': maquina.production_rate_units or '',
-            'machine_age': maquina.machine_age or 0,
+
         }
         
         return JsonResponse(data)
